@@ -1,7 +1,7 @@
 import requests
 import json
 # Credentials you get from registering a new application
-client_id = 'dc52798ba75f57f7'
+client_id = 'XXXXXXXXXX'
 
 data = {
   'client_id': client_id,
