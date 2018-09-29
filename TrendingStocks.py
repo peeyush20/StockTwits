@@ -1,32 +1,36 @@
 import requests
 import json
-# Credentials you get from registering a new application
-client_id = 'XXXXXXXXXX'
+import pandas as pd
+from datetime import datetime
+import time
 
-data = {
-  'client_id': client_id,
-  'response_type': 'code',
-  'redirect_uri': 'http://www.example.com',
-  'scope': 'read,watch_lists,publish_messages,publish_watch_lists,follow_users,follow_stocks',
-  'prompt': 1
-}
 
-# Retrieve list of 30 trending equities
-r = requests.get('https://api.stocktwits.com/api/2/trending/symbols/equities.json')
-ans = json.loads(r.text)
+def get_data():
+    # Retrieve list of 30 trending equities
+    r = requests.get('https://api.stocktwits.com/api/2/trending/symbols/equities.json')
+    ans = json.loads(r.text)
 
-for i in range(30):
-    print(ans['symbols'][i]['symbol'])
+    df = pd.read_excel('xyz.xlsx')
+    writer = pd.ExcelWriter('xyz.xlsx')
+    l = []
 
-# Print message about specific stock:
-# Stock at index 0
-query = 'https://api.stocktwits.com/api/2/streams/symbol/' + ans['symbols'][0]['symbol'] + '.json'
-# print(query)
-r = ''
-r = requests.get(query)
+    for i in range(30):
+        print(ans['symbols'][i]['symbol'])
+        l.append(ans['symbols'][i]['symbol'])
 
-ans = ''
-ans = json.loads(r.text)
+    df[datetime.now()] = l
+    df.to_excel(writer)
+    writer.save()
+    writer.close()
 
-for i in range(30):
-    print(ans['messages'][i]['body'])
+
+if __name__ == '__main__':
+    start_time = time.time()
+    cnt = 0
+    while True:
+        get_data()
+        time.sleep(300.0-((time.time() - start_time) % 300.0))
+        cnt += 1
+
+        if cnt == 10:
+            break
