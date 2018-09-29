@@ -10,19 +10,17 @@ def get_data():
     r = requests.get('https://api.stocktwits.com/api/2/trending/symbols/equities.json')
     ans = json.loads(r.text)
 
-    df = pd.read_excel('xyz.xlsx')
-    writer = pd.ExcelWriter('xyz.xlsx')
-    l = []
-
+    df = pd.read_excel('data.xlsx')
+    writer = pd.ExcelWriter('data.xlsx')
+    stock_list = []
     for i in range(30):
         print(ans['symbols'][i]['symbol'])
-        l.append(ans['symbols'][i]['symbol'])
+        stock_list.append(ans['symbols'][i]['symbol'])
 
-    df[datetime.now()] = l
+    df[datetime.now()] = stock_list
     df.to_excel(writer)
     writer.save()
     writer.close()
-
 
 if __name__ == '__main__':
     start_time = time.time()
@@ -31,6 +29,5 @@ if __name__ == '__main__':
         get_data()
         time.sleep(300.0-((time.time() - start_time) % 300.0))
         cnt += 1
-
         if cnt == 10:
             break
